@@ -35,8 +35,10 @@ public class PlayerMovement : MonoBehaviour
     public int maxJumps = 1;
 
     public AudioSource audioSource; // attach the player's audio source
-    public AudioClip[] grassSteps;
+    public AudioClip[] dirtSteps;
     public AudioClip[] stoneSteps;
+    public AudioClip[] grassSteps;
+    public AudioClip[] leaveSteps;
     public float stepInterval = 0.5f;
     private float stepTimer;
     private string groundTag = "Default";
@@ -51,12 +53,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
+        RaycastHit hit;
 
-        if (grounded)
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, playerHeight * 0.5f + 0.2f, whatIsGround))
         {
+            grounded = true;
             rb.drag = groundDrag;
             jumpCount = 0;
+
+            groundTag = hit.collider.tag;
 
             stepTimer += Time.deltaTime;
             if (stepTimer >= stepInterval && (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D)))
@@ -67,6 +72,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
+            grounded = false;
             rb.drag = 0;
             stepTimer = 0f;
         }
@@ -129,19 +135,19 @@ public class PlayerMovement : MonoBehaviour
         readyToJump = true;
     }
 
-    private void OnCollisionStay(Collision collision)
-    {
-        if (((1 << collision.gameObject.layer) & whatIsGround) != 0)
-        {
-            groundTag = collision.gameObject.tag;
-        }
-    }
-
     private void Footsteps()
     {
         if (groundTag == "stone")
             audioSource.PlayOneShot(stoneSteps[Random.Range(0, stoneSteps.Length)]);
-        else
+
+        else if (groundTag == "gras")
             audioSource.PlayOneShot(grassSteps[Random.Range(0, grassSteps.Length)]);
+
+        else if (groundTag == "leaves")
+            audioSource.PlayOneShot(leaveSteps[Random.Range(0, leaveSteps.Length)]);
+
+        else if (groundTag == "dirt")
+            audioSource.PlayOneShot(dirtSteps[Random.Range(0, dirtSteps.Length)]);
+
     }
 }
