@@ -166,6 +166,14 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+    public float playerHeight;
+    public LayerMask whatIsGround;
+    bool grounded;
+    public float groundDrag;
+    public float stepInterval = 0.5f;
+    private float stepTimer;
+
+
     public Camera playerCamera;
     public float walkSpeed = 6f;
     public float runSpeed = 12f;
@@ -183,6 +191,7 @@ public class PlayerMovement : MonoBehaviour
     public AudioClip[] stoneSteps;
     public AudioClip[] grassSteps;
     public AudioClip[] leaveSteps;
+    public AudioClip[] woodSteps;
 
     private Vector3 moveDirection = Vector3.zero;
     private float rotationX = 0;
@@ -190,8 +199,11 @@ public class PlayerMovement : MonoBehaviour
 
     private bool canMove = true;
 
+    public bool crouched;
+
     void Start()
     {
+
         characterController = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -199,6 +211,26 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        RaycastHit hit;
+
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, playerHeight * 0.5f + 0.2f, whatIsGround))
+        {
+            grounded = true;
+            groundTag = hit.collider.tag;
+
+            stepTimer += Time.deltaTime;
+            if (stepTimer >= stepInterval && (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D)))
+            {
+                Footsteps();
+                stepTimer = 0f;
+            }
+        }
+        else
+        {
+            grounded = false;
+            stepTimer = 0f;
+        }
+
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
 
@@ -227,6 +259,7 @@ public class PlayerMovement : MonoBehaviour
             characterController.height = crouchHeight;
             walkSpeed = crouchSpeed;
             runSpeed = crouchSpeed;
+            crouched = true;
 
         }
         else
@@ -234,6 +267,20 @@ public class PlayerMovement : MonoBehaviour
             characterController.height = defaultHeight;
             walkSpeed = 6f;
             runSpeed = 12f;
+            crouched = false;
+        }
+
+        if ((Input.GetKey(KeyCode.LeftShift)))
+        {
+            stepInterval = 0.27f;
+        }
+        else if (crouched)
+        {
+            stepInterval = 0.55f;
+        }
+        else
+        {
+            stepInterval = 0.46f;
         }
 
         characterController.Move(moveDirection * Time.deltaTime);
@@ -262,6 +309,9 @@ public class PlayerMovement : MonoBehaviour
 
         else if (groundTag == "dirt")
             audioSource.PlayOneShot(dirtSteps[Random.Range(0, dirtSteps.Length)]);
+
+        else if (groundTag == "wood")
+            audioSource.PlayOneShot(woodSteps[Random.Range(0, woodSteps.Length)]);
 
     }
 }
