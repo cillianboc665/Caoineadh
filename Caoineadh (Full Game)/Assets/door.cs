@@ -14,6 +14,9 @@ public class door : MonoBehaviour
     public AudioSource opening;
     public AudioSource closing;
 
+    public Transform enemy;
+    private bool openedByEnemy = false;
+
     float NormalizeAngle(float angle)
     {
         angle = angle % 360;
@@ -25,10 +28,36 @@ public class door : MonoBehaviour
     void Update()
     {
         float dist = Vector3.Distance(player.position, transform.position);
+        float distToEnemy = Vector3.Distance(enemy.position, transform.position);
 
 
         Vector3 currentRot = Door.transform.localEulerAngles;
         float currentY = NormalizeAngle(currentRot.y);
+
+        bool wasOpen = open;
+
+        if (dist <= activeDist && Input.GetKeyDown(KeyCode.E))
+        {
+            open = !open;
+            openedByEnemy = false;
+        }
+
+        if (distToEnemy <= activeDist)
+        {
+            open = true;
+            openedByEnemy = true;
+        }
+
+        if (openedByEnemy && distToEnemy > activeDist)
+        {
+            open = false;
+            openedByEnemy = false;
+        }
+
+        if (open && !wasOpen)
+            opening.Play();
+        else if (!open && wasOpen)
+            closing.Play();
 
         if (open)
         {
@@ -39,19 +68,6 @@ public class door : MonoBehaviour
         {
             float newY = Mathf.LerpAngle(currentY, closedAngle, speed * Time.deltaTime);
             Door.transform.localEulerAngles = new Vector3(currentRot.x, newY, currentRot.z);
-        }
-
-        if (dist <= activeDist && Input.GetKeyDown(KeyCode.E))
-        {
-            ToggleDoor();
-            if (open == true)
-            {
-                opening.Play();
-            }
-            else if (open == false)
-            {
-                closing.Play();
-            }
         }
     }
 

@@ -40,7 +40,7 @@ public class flashlight : MonoBehaviour
                 torch.SetActive(false);
                 isOn = false;
             }
-            else if (charge >= 0.05f)
+            else if (charge >= 50f)
             {
                 torch.SetActive(true);
                 isOn = true;
@@ -76,7 +76,7 @@ public class flashlight : MonoBehaviour
     {
         lightText.text = $"Charge {charge:F0}%";
 
-        if (isOn)
+        if (isOn || (!isOn && charge < 50f))
         {
             useableText.color = new Color(1f, 0f, 0f, useableText.color.a);
         }
