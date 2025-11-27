@@ -172,6 +172,7 @@ public class PlayerMovement : MonoBehaviour
     public float groundDrag;
     public float stepInterval = 0.5f;
     private float stepTimer;
+    
 
 
     public Camera playerCamera;
@@ -185,6 +186,11 @@ public class PlayerMovement : MonoBehaviour
     public float crouchHeight = 1f;
     public float crouchSpeed = 3f;
     private string groundTag = "Default";
+
+    public float maxStamina = 5f;
+    public float currentStamina;
+    public float staminaDrainSpeed = 1f;
+    public float staminaRegenSpeed = 2f;
 
     public AudioSource audioSource; // attach the player's audio source
     public AudioClip[] dirtSteps;
@@ -201,12 +207,19 @@ public class PlayerMovement : MonoBehaviour
 
     public bool crouched;
 
+    [HideInInspector] public StaminaController _staminaController;
+
     void Start()
     {
-
+        _staminaController = GetComponent<StaminaController>();
         characterController = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    public void SetRunSpeed(float speed)
+    {
+        runSpeed = speed;
     }
 
     void Update()
@@ -234,11 +247,34 @@ public class PlayerMovement : MonoBehaviour
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
 
-        bool isRunning = Input.GetKey(KeyCode.LeftShift);
+        bool isRunning = Input.GetKey(KeyCode.LeftShift);  
         float curSpeedX = canMove ? (isRunning ? runSpeed : walkSpeed) * Input.GetAxis("Vertical") : 0;
         float curSpeedY = canMove ? (isRunning ? runSpeed : walkSpeed) * Input.GetAxis("Horizontal") : 0;
         float movementDirectionY = moveDirection.y;
         moveDirection = (forward * curSpeedX) + (right * curSpeedY);
+
+        bool isWalking;
+        isWalking = !Input.GetKey(KeyCode.LeftShift);
+
+
+       if (isWalking)
+        {
+            _staminaController.weAreSprinting = false;
+        }
+        
+       if (!isWalking && curSpeedY > 0)
+        {
+            if (_staminaController.playerStamina > 0)
+            {
+                _staminaController.weAreSprinting = true;
+                _staminaController.Sprinting();
+            }
+            else
+            {
+                isWalking = true;
+            }
+        }
+       
 
         if (Input.GetButton("Jump") && canMove && characterController.isGrounded)
         {
