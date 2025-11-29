@@ -27,6 +27,9 @@ public class EnemyAI : MonoBehaviour
 
     public float eyeLevel;
 
+    //[SerializeField] private LayerMask obstructionLayers = ~0;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -45,6 +48,7 @@ public class EnemyAI : MonoBehaviour
         if (PlayerSeen() && currentState != States.Chasing)
         {
             currentState = States.Chasing;
+            timeSinceLastSaw = susTime;
         }
     }
 
@@ -55,6 +59,9 @@ public class EnemyAI : MonoBehaviour
         switch (currentState)
         {
             case States.Idle:
+
+                agent.speed = 2.5f;
+
                 if (waitCounter > 0)
                 {
                     waitCounter -= Time.deltaTime;
@@ -73,6 +80,8 @@ public class EnemyAI : MonoBehaviour
                 break;
 
             case States.Patrolling:
+
+                agent.speed = 2.5f;
 
                 if (agent.remainingDistance <= 0.2f)
                 {
@@ -93,20 +102,16 @@ public class EnemyAI : MonoBehaviour
                     }
                 }
 
-                if (PlayerSeen())
-                {
-                    currentState = States.Chasing;
-                }
-
                 break;
 
             case States.Chasing:
 
                 agent.SetDestination(player.transform.position);
+                agent.speed = 6.5f;
 
                 float distToPlayer = Vector3.Distance(transform.position, player.transform.position);
 
-                if (distToPlayer > sightRange)
+                if (distToPlayer > sightRange && !PlayerSeen())
                 {
                     agent.isStopped = true;
                     agent.velocity = Vector3.zero;
@@ -120,6 +125,12 @@ public class EnemyAI : MonoBehaviour
                     }
                 }
 
+                else
+                {
+                    timeSinceLastSaw = susTime;
+                    agent.isStopped = false;
+                }
+
                 break;
         }
     }
@@ -128,9 +139,14 @@ public class EnemyAI : MonoBehaviour
     {
         Vector3 eyePos = transform.position + Vector3.up * eyeLevel;
 
+        Vector3 playerEyePos = player.transform.position + Vector3.up * eyeLevel;
+
         Vector3 directionToPlayer = (player.transform.position - eyePos).normalized;  // may need to change transform.position to transform.position + eyeOffset
 
-        if (Vector3.Distance(eyePos, player.transform.position) > sightRange)
+        float distanceToPlayer = Vector3.Distance(eyePos, playerEyePos);
+
+
+        if (distanceToPlayer > sightRange)
         {
             return false;
         }
@@ -193,6 +209,14 @@ public class EnemyAI : MonoBehaviour
             Vector3 nextPoint = eyePos + Quaternion.AngleAxis(stepAngle, Vector3.up) * transform.forward * sightRange;
             Gizmos.DrawLine(prevPoint, nextPoint);
             prevPoint = nextPoint;
+        }
+
+        // Draw line to player if in sight
+        if (PlayerSeen())
+        {
+            Gizmos.color = Color.green;
+            Vector3 playerEyePos = player.transform.position + Vector3.up * eyeLevel;
+            Gizmos.DrawLine(eyePos, playerEyePos);
         }
     }
 }
