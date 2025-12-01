@@ -27,6 +27,9 @@ public class EnemyAI : MonoBehaviour
 
     public float eyeLevel;
 
+    public EnemyBlob blobScript;
+
+
     //[SerializeField] private LayerMask obstructionLayers = ~0;
 
 
@@ -62,6 +65,8 @@ public class EnemyAI : MonoBehaviour
 
                 agent.speed = 2.5f;
 
+                blobScript.eyesShouldLookAtPlayer = false;
+
                 if (waitCounter > 0)
                 {
                     waitCounter -= Time.deltaTime;
@@ -82,6 +87,8 @@ public class EnemyAI : MonoBehaviour
             case States.Patrolling:
 
                 agent.speed = 2.5f;
+
+                blobScript.eyesShouldLookAtPlayer = false;
 
                 if (agent.remainingDistance <= 0.2f)
                 {
@@ -108,6 +115,9 @@ public class EnemyAI : MonoBehaviour
 
                 agent.SetDestination(player.transform.position);
                 agent.speed = 6.5f;
+
+                blobScript.eyesShouldLookAtPlayer = true;
+                blobScript.player = player.transform;
 
                 float distToPlayer = Vector3.Distance(transform.position, player.transform.position);
 

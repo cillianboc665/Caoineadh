@@ -44,10 +44,8 @@ public class EyeBlob : MonoBehaviour
         if (blob == null)
             return;
 
-        // Move eye to maintain offset from blob center
         transform.position = blob.position + offset;
 
-        // Optionally rotate eye toward player
         if (lookAtPlayer && player != null)
         {
             transform.LookAt(player.position);

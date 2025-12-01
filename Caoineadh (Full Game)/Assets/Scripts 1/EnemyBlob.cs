@@ -19,6 +19,9 @@ public class EnemyBlob : MonoBehaviour
     private Vector3[] vertices;
     private Mesh mesh;
 
+    public Transform player;
+    public bool eyesShouldLookAtPlayer = false;
+
     void Start()
     {
         mesh = GetComponent<MeshFilter>().mesh;
@@ -63,17 +66,26 @@ public class EnemyBlob : MonoBehaviour
 
     void UpdateEyePositions()
     {
-        if (leftEye != null && leftEyeVertexIndex < vertices.Length && leftEyeVertexIndex >= 0)
+        if (vertices != null && vertices.Length > 0)
         {
-            Vector3 worldPos = transform.TransformPoint(vertices[leftEyeVertexIndex]);
-            leftEye.position = worldPos;
-            leftEye.rotation = Quaternion.LookRotation(transform.forward);
+            Vector3 leftPos = transform.TransformPoint(vertices[leftEyeVertexIndex]);
+            Vector3 rightPos = transform.TransformPoint(vertices[rightEyeVertexIndex]);
+
+            leftEye.position = leftPos;
+            rightEye.position = rightPos;
         }
 
-        if (rightEye != null && rightEyeVertexIndex < vertices.Length && rightEyeVertexIndex >= 0)
+        if (eyesShouldLookAtPlayer && player != null)
         {
-            Vector3 worldPos = transform.TransformPoint(vertices[rightEyeVertexIndex]);
-            rightEye.position = worldPos;
+            Quaternion leftRot = Quaternion.LookRotation(player.position - leftEye.position);
+            Quaternion rightRot = Quaternion.LookRotation(player.position - rightEye.position);
+
+            leftEye.rotation = leftRot;
+            rightEye.rotation = rightRot;
+        }
+        else
+        {
+            leftEye.rotation = Quaternion.LookRotation(transform.forward);
             rightEye.rotation = Quaternion.LookRotation(transform.forward);
         }
     }

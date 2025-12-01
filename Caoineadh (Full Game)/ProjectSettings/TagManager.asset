@@ -8,6 +8,7 @@ TagManager:
   - stone
   - dirt
   - leaves
+  - Enemy
   layers:
   - Default
   - TransparentFX
