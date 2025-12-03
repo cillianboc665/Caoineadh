@@ -204,6 +204,20 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
 
+
+        // In a Start or Awake method of your game manager:
+        GameObject startCheckpoint = GameObject.FindWithTag("Checkpoint");
+        if (startCheckpoint != null && CheckpointManager.Instance != null)
+        {
+            CheckpointManager.Instance.SetCheckpoint(startCheckpoint.transform);
+        }
+
+
+
+
+
+
+
         characterController = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;

@@ -9,6 +9,7 @@ TagManager:
   - dirt
   - leaves
   - Enemy
+  - Checkpoint
   layers:
   - Default
   - TransparentFX
