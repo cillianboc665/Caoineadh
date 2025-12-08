@@ -14,6 +14,14 @@ public class textBox : MonoBehaviour
             text.SetActive(false);
     }
 
+    private void Update()
+    {
+        if (GetComponent<BoxCollider>() != null && !(GetComponent<BoxCollider>()).enabled)
+        {
+            text.SetActive(false);
+        }
+    }
+
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag(player))

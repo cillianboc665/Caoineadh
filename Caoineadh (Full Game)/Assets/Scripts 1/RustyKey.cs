@@ -1,24 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
-public class Lever : MonoBehaviour
+public class RustyKey : MonoBehaviour
 {
-    public Transform lever;
-    public bool leverOn;
     private bool inRange = false;
-
-    public GameObject leverUp;
-    public GameObject leverDown;
-
+    public GameObject doorLock;
+    public GameObject key;
     public AudioSource sfx;
 
     // Start is called before the first frame update
     void Start()
     {
-        leverOn = false;
-        leverUp.SetActive(true);
-        leverDown.SetActive(false);
+        doorLock.SetActive(false);
     }
 
     // Update is called once per frame
@@ -27,19 +22,8 @@ public class Lever : MonoBehaviour
         if (inRange && Input.GetKeyDown(KeyCode.E))
         {
             sfx.Play();
-
-            if (leverOn)
-            {
-                leverOn = false;
-                leverUp.SetActive(true);
-                leverDown.SetActive(false);
-            }
-            else if (!leverOn)
-            {
-                leverOn = true;
-                leverUp.SetActive(false);
-                leverDown.SetActive(true);
-            }
+            doorLock.SetActive(true);
+            key.SetActive(false);
         }
     }
 

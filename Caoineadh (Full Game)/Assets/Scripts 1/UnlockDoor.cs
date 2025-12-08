@@ -1,24 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
-public class Lever : MonoBehaviour
+public class UnlockDoor : MonoBehaviour
 {
-    public Transform lever;
-    public bool leverOn;
     private bool inRange = false;
-
-    public GameObject leverUp;
-    public GameObject leverDown;
-
+    public GameObject doorToOpen;
+    public TMP_Text doorText;
     public AudioSource sfx;
+    public GameObject doorLock;
 
     // Start is called before the first frame update
     void Start()
     {
-        leverOn = false;
-        leverUp.SetActive(true);
-        leverDown.SetActive(false);
+        doorText.text = "Requires Rusty Key";
     }
 
     // Update is called once per frame
@@ -27,19 +23,10 @@ public class Lever : MonoBehaviour
         if (inRange && Input.GetKeyDown(KeyCode.E))
         {
             sfx.Play();
-
-            if (leverOn)
-            {
-                leverOn = false;
-                leverUp.SetActive(true);
-                leverDown.SetActive(false);
-            }
-            else if (!leverOn)
-            {
-                leverOn = true;
-                leverUp.SetActive(false);
-                leverDown.SetActive(true);
-            }
+            MonoBehaviour doorScript = doorToOpen.GetComponent<door>();
+            doorScript.enabled = true;
+            doorLock.SetActive(false);
+            doorText.text = "'E' to interact";
         }
     }
 
