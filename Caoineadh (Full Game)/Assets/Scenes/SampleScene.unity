@@ -2606,7 +2606,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sfx: {fileID: 1336283420}
   player: {fileID: 2014770296}
-  subtitleText: . Let's get going!
+  subtitleText: What is up guys?! Tonight, we're gonna go explore the old abandoned
+    house we found last video. From what I found out, it dates all the way back to
+    the Famine! Let's get going!
   showSubtitle: 1
 --- !u!65 &41666305
 BoxCollider:
@@ -43711,7 +43713,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -290}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 555, y: 67}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1019625281
 MonoBehaviour:

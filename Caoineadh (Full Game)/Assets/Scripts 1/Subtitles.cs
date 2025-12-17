@@ -30,6 +30,8 @@ public class Subtitles : MonoBehaviour
 
         yield return StartCoroutine(TypeLine(text, duration));
 
+        yield return new WaitForSeconds(3);
+
         // Clear after typing ends (optional: add a delay)
         subtitleText.text = "";
         currentCoroutine = null;
